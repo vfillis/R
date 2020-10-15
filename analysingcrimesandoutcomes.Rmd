@@ -1,0 +1,176 @@
+---
+title: Analysing Crimes and Outcomes in the West Midlands between January and August 2020
+author: "Vanessa Fillis"
+date: "10/15/2020"
+output: html_document
+---
+
+# Analysing the crimes and outcomes of reported crimes in the West Midlands between January 2020 and August 2020
+
+At first, download the data from https://data.police.uk/data/ and save the .csv-files in your working directory. 
+
+## Import all reported crimes
+
+Then, import all reported crimes using **read.csv()**
+
+```{r}
+crimesWestMidlands0120 <- read.csv("2020-01-west-midlands-street.csv", stringsAsFactors = FALSE)
+crimesWestMidlands0220 <- read.csv("2020-02-west-midlands-street.csv", stringsAsFactors = FALSE)
+crimesWestMidlands0320 <- read.csv("2020-03-west-midlands-street.csv", stringsAsFactors = FALSE)
+crimesWestMidlands0420 <- read.csv("2020-04-west-midlands-street.csv", stringsAsFactors = FALSE)
+crimesWestMidlands0520 <- read.csv("2020-05-west-midlands-street.csv", stringsAsFactors = FALSE)
+crimesWestMidlands0620 <- read.csv("2020-06-west-midlands-street.csv", stringsAsFactors = FALSE)
+crimesWestMidlands0720 <- read.csv("2020-07-west-midlands-street.csv", stringsAsFactors = FALSE)
+crimesWestMidlands0820 <- read.csv("2020-08-west-midlands-street.csv", stringsAsFactors = FALSE)
+```
+
+## Join the data frames 
+
+Join all individual data frames using **rbind()** and store the result in a new variable. 
+
+```{r}
+crimesWestMidlands0120to0820 <- rbind(crimesWestMidlands0120, crimesWestMidlands0220, crimesWestMidlands0320, crimesWestMidlands0420, crimesWestMidlands0520, crimesWestMidlands0620, crimesWestMidlands0720, crimesWestMidlands0820)
+```
+
+## Explore the new data frame
+
+How many crimes have been reported?
+
+```{r}
+length(crimesWestMidlands0120to0820$Crime.type)
+```
+
+Which crime type has been reported the most?
+
+```{r}
+crimetypesWestMidlands2020 <- table(crimesWestMidlands0120to0820$Crime.type)
+crimetypesWestMidlands2020 <- crimetypesWestMidlands2020[order(-crimetypesWestMidlands2020)]
+crimetypesWestMidlands2020
+```
+
+
+## Import the outcomes 
+
+Next, import all outcomes: 
+
+```{r}
+outcomesWestMidlands0120 <- read.csv("2020-01-west-midlands-outcomes.csv", stringsAsFactors = FALSE)
+outcomesWestMidlands0220 <- read.csv("2020-02-west-midlands-outcomes.csv", stringsAsFactors = FALSE)
+outcomesWestMidlands0320 <- read.csv("2020-03-west-midlands-outcomes.csv", stringsAsFactors = FALSE)
+outcomesWestMidlands0420 <- read.csv("2020-04-west-midlands-outcomes.csv", stringsAsFactors = FALSE)
+outcomesWestMidlands0520 <- read.csv("2020-05-west-midlands-outcomes.csv", stringsAsFactors = FALSE)
+outcomesWestMidlands0620 <- read.csv("2020-06-west-midlands-outcomes.csv", stringsAsFactors = FALSE)
+outcomesWestMidlands0720 <- read.csv("2020-07-west-midlands-outcomes.csv", stringsAsFactors = FALSE)
+outcomesWestMidlands0820 <- read.csv("2020-08-west-midlands-outcomes.csv", stringsAsFactors = FALSE)
+```
+
+## Join all outcomes using rbind()
+
+Join all individual data frames using **rbind()** and store the result in a new variable. 
+
+```{r}
+outcomesWestMidlands0120to0820 <- rbind(outcomesWestMidlands0120, outcomesWestMidlands0220, outcomesWestMidlands0320, outcomesWestMidlands0420, outcomesWestMidlands0520, outcomesWestMidlands0620, outcomesWestMidlands0720, outcomesWestMidlands0820)
+```
+
+## Explore the data frame
+
+How many outcomes have been published? 
+
+```{r}
+length(outcomesWestMidlands0120to0820$Outcome.type)
+```
+
+How many times does each outcome type occur?
+
+```{r}
+outcometypesWestMidlands2020 <- table(outcomesWestMidlands0120to0820$Outcome.type)
+outcometypesWestMidlands2020 <- outcometypesWestMidlands2020[order(-outcometypesWestMidlands2020)]
+outcometypesWestMidlands2020
+```
+
+## Join crimes and outcomes 
+
+Join all crimes and outcomes by their crime.id using **merge()**.
+
+When merging the data frames, only the rows where the crime IDs in the data frames *crimesWestMidlands0120to0820* and *outcomesWestMidlands0120to0820* match, are stored in the new data frame. 
+
+This means that crimes without a crime ID or crimes that have not been solved yet, are not stored in the new data set. 
+
+```{r}
+crimesoutcomesWestMidlands2020 <- merge(crimesWestMidlands0120to0820, outcomesWestMidlands0120to0820, by = "Crime.ID")
+```
+
+## Explore the new data frame
+
+```{r}
+summary(crimesoutcomesWestMidlands2020)
+```
+
+## Crime outcomes for crimes reported in the West Midlands between January and August 2020
+
+Find out what the most common crime outcome for the crimes reported in the West Midlands in 2020 was by using the **table()** function.
+
+```{r}
+crimesoutcomesWM2020table <- table(crimesoutcomesWestMidlands2020$Outcome.type)
+crimesoutcomesWM2020table <- crimesoutcomesWM2020table[order(-crimesoutcomesWM2020table)]
+crimesoutcomesWM2020table
+#save as .csv
+write.csv(crimesoutcomesWM2020table, file = "crimesandoutcomesWM2020table.csv")
+```
+
+## Proportions of total number of reported crimes in that period
+
+What proportion does each outcome type have of the overall number of reported crimes in the West Midlands between January 2020 and August 2020? 
+
+```{r}
+crimesoutcomesWM2020table[1]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[2]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[3]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[4]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[5]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[6]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[7]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[8]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[9]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[10]/length(crimesWestMidlands0120to0820$Crime.type)
+crimesoutcomesWM2020table[11]/length(crimesWestMidlands0120to0820$Crime.type)
+```
+
+## Sum of all outcome proportions  
+
+For what proportion of the reported crimes is an outcome available?
+
+```{r}
+sum(crimesoutcomesWM2020table[1]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[2]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[3]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[4]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[5]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[6]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[7]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[8]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[9]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[10]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[11]/length(crimesWestMidlands0120to0820$Crime.type))
+```
+
+For the rest no outcome is available: 
+ 
+```{r}
+1-sum(crimesoutcomesWM2020table[1]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[2]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[3]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[4]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[5]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[6]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[7]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[8]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[9]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[10]/length(crimesWestMidlands0120to0820$Crime.type),
+crimesoutcomesWM2020table[11]/length(crimesWestMidlands0120to0820$Crime.type))
+```
+
+
+
+
+
