@@ -1,5 +1,5 @@
 ---
-title: "API test"
+title: "API for coronavirus data"
 author: "Vanessa Fillis"
 date: "10/11/2020"
 output: html_document
