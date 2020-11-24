@@ -126,10 +126,8 @@ cases.upperLA <- subset(cases.upperLA, cases.upperLA$England == TRUE)
 
 Populations used are [Office for National Statistics 2019 mid-year estimates](https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationestimatesforukenglandandwalesscotlandandnorthernireland). 
 
-Merging them by their name brings results for all upper tier local authorities except for "Cornwall and Isles of Scilly" and "Hackney and City of London". -> add new row in csv before to make it work
-
 ```{r}
-population.estimates <- read.csv("population estimates_mid2019-edited.csv", stringsAsFactors = FALSE)
+population.estimates <- read.csv("population estimates_mid2019.csv", stringsAsFactors = FALSE)
 
 #Rename column "code" for merging
 population.estimates <- population.estimates %>%
@@ -198,14 +196,3 @@ write.csv(sum.cases.upperLA, file = "case_rate_upperLAs_last14.csv")
 ```
 
 
-
-## Group LAs into counties 
-
-There are 31 'upper tier' authorities. 
-
-25 non-metropolitan counties
-6 metropolitan counties
-
-```{r}
-
-```
